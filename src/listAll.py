@@ -1,16 +1,31 @@
 import os
+import re
 
 sourceCSVFile = open("/home/madhup/Documents/dev/folderInfo.csv" , "w")
 sourceFolder = "/home/madhup/Documents/postgre/postgresql-12.3"
 folderArr=[sourceFolder]
 fileEntry = "file"
 folderEntry = "folder"
+baseLevel = len(re.findall("/", sourceFolder))
+dirLevel = 0
 
 
 """
-def defineFile(path, fileName):
-    sourceCSV = open(path + "/" + fileName + ".csv" ,"w")
+This is the function which will create the CSV File with all the entries in the source folder
+1. Serial Number of all the entries
+2. Folder Level, which is equivalent to folder depth. 
+3. Type, which is either file or folder
+4. Parent Folder of the entry
+5. Entry, which is either the file name or folder name
+
+The task is done in the following steps
+1. It writes the header to the CSV file, which has been defined at the program level
+2. It iterates through the base folder array of the source code
+3. It iterates through all the entries present in the base folder array
+4. If the entry is a folder, then the folder gets added to the base folder array at end of the list
+5. It makes an entry to the CSV file based on the header information that has been defined in step 1.
 """
+
 
 def inputSrcInfo (folderPath):
     outerCount = 0
@@ -31,14 +46,9 @@ def inputSrcInfo (folderPath):
         outerCount += 1
         newEntry = ""
 
-        """
-        if(subDirCount + folderLevel == len(folderArr) - 1 and folderAdded == True):
-            folderLevel += 1
-            subDirCount = 0
-            folderAdded = False
+        dirLevel = len(re.findall("/",parentFolder))
+        folderLevel = dirLevel - baseLevel
 
-        """
-        folderAdded = False
         print(debugStr.format(len(folderArr), parentFolder, subDirCount, folderLevel))
 
         for entry in folderList:
@@ -46,18 +56,15 @@ def inputSrcInfo (folderPath):
             entryCount += 1
             
             newEntry = str(entryCount) + "\t" + str(folderLevel) +"\t"
-            newDebugStr = "Child in parent folder is {}. It is of the type {}.\n OuterCount is {}. Folder Level is {}.\n New Folder Array Length is {}. Entry in CSV File is {}."
+
             if (os.path.isdir(childEntry)):
                 folderArr.append(childEntry)
-                folderAdded = True
                 newEntry += folderEntry + "\t" + parentFolder + "\t" + entry + "\n"
-                ##print(newDebugStr.format(childEntry, folderEntry, str(outerCount), str(folderLevel), str(len(folderArr)), newEntry))
                 subDirCount += 1
                 
                 sourceCSVFile.write(newEntry)
             else:
                 newEntry += fileEntry + "\t" + parentFolder + "\t" + entry + "\n"
-                ##print(newDebugStr.format(childEntry, fileEntry, str(outerCount), str(folderLevel),str(len(folderArr)), newEntry))
                 sourceCSVFile.write(newEntry)
 
 
